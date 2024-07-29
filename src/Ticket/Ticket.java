@@ -1,51 +1,52 @@
 package Ticket;
 
-import Service.IDManager;
-
-import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Objects;
 
-public class Ticket implements Service.IDManager {
+public class Ticket implements Service.IDManager, Service.PrintClassInfo {
     private static int ticketCount = 1;
-    private int ticketID = 0;
-    private String concertHallName;
+    private int ticketID;
+    private String venueName;
     private int eventCode;
-    private LocalDateTime concertStartTime;
+    private LocalDateTime time;
     private boolean isPromo;
-    private StadiumSector stadiumSector;
+    private SeatSector seatSector;
     private float backpackWeightMAX;
     private final LocalDateTime ticketCreationTime;
-
+    public static ArrayList<Ticket> tickets = new ArrayList<Ticket>();
 
     public Ticket() {
         this.setID();
-        ticketCreationTime = LocalDateTime.from(Instant.now());
+        ticketCreationTime = LocalDateTime.now();
+        tickets.add(this);
     }
 
-    public Ticket(String concertHallName, int eventCode, LocalDateTime concertStartTime) {
+    public Ticket(String venueName, int eventCode, LocalDateTime time) {
         this.setID();
-        ticketCreationTime = LocalDateTime.from(Instant.now());
+        ticketCreationTime = LocalDateTime.now();
 
-        if (concertHallName.length() > 10) {
+        if (venueName.length() > 10) {
             throw new IllegalArgumentException("ConcertHallName shouldn't be longer than 10 chars");
         }
-        this.concertHallName = concertHallName;
+        this.venueName = venueName;
 
         if(((int) (Math.log10(eventCode) + 1)) != 3 ) {
             throw new IllegalArgumentException("EventCode should contain 3 digits");
         }
         this.eventCode = eventCode;
 
-        this.concertStartTime = concertStartTime;
+        this.time = time;
+        tickets.add(this);
     }
 
-    public Ticket(String concertHallName, int eventCode,
-                  LocalDateTime concertStartTime, boolean isPromo, StadiumSector stadiumSector, float backpackWeightMAX) {
+    public Ticket(String venueName, int eventCode,
+                  LocalDateTime time, boolean isPromo, SeatSector sector, float backpackWeightMAX) {
 
-        this(concertHallName, eventCode, concertStartTime);
+        this(venueName, eventCode, time);
 
         this.isPromo = isPromo;
-        this.stadiumSector = stadiumSector;
+        this.seatSector = seatSector;
 
         if (backpackWeightMAX <= 0) {
             throw new IllegalArgumentException("BagWeightMAX should be above 0");
@@ -69,61 +70,68 @@ public class Ticket implements Service.IDManager {
         return this.ticketID;
     }
 
-    public void setConcertHallName(String concertHallName) {
-        if (concertHallName.length() > 10) {
-            throw new IllegalArgumentException("ConcertHallName shouldn't be longer than 10 chars");
-        }
-        this.concertHallName = concertHallName;
-    }
-
-    public String getConcertHallName() {return this.concertHallName;}
-
-    public void setEventCode(int eventCode) {
-        if(((int) (Math.log10(eventCode) + 1)) != 3 ) {
-            throw new IllegalArgumentException("EventCode should contain 3 digits");
-        }
-        this.eventCode = eventCode;
-    }
+    public String getVenueName() {return this.venueName;}
 
     public int getEventCode() {return this.eventCode;}
 
-    public void setConcertStartTime(LocalDateTime concertStartTime) {
-        this.concertStartTime = concertStartTime;
+    public void setTime(LocalDateTime time) {
+        this.time = time;
     }
 
-    public LocalDateTime getConcertStartTime() {return this.concertStartTime;}
-
-    public void setPromo(boolean promo) {
-        isPromo = promo;
-    }
+    public LocalDateTime getTime() {return this.time;}
 
     public boolean isPromo() {return isPromo;}
 
-    public void setStadiumSector(StadiumSector stadiumSector) {
-        this.stadiumSector = stadiumSector;
+    public void setSeatSector(SeatSector seatSector) {
+        this.seatSector = seatSector;
     }
 
-    public StadiumSector getStadiumSector() {return this.stadiumSector;}
-
-    public void setBackpackWeightMAX(float backpackWeightMAX) {
-        if (backpackWeightMAX <= 0) {
-            throw new IllegalArgumentException("BagWeightMAX should be above 0");
-        }
-        this.backpackWeightMAX = backpackWeightMAX;
-    }
+    public SeatSector getSeatSector() {return this.seatSector;}
 
     public float getBackpackWeightMAX() {return this.backpackWeightMAX;}
 
     public LocalDateTime getTicketCreationTime() {return ticketCreationTime;}
 
-        public enum StadiumSector {
+    public void shareTicket(long phoneNumber) {
+        String ticketDetail = this.toString();
+        String printMessage = String.format("Ticket details were shared by phone: %d", phoneNumber);
+        System.out.println(printMessage);
+    }
+
+    public void shareTicket(long phoneNumber, String eMail) {
+        String ticketDetail = this.toString();
+        String printMessage = String.format("Ticket details were shared by phone %d and by eMail: %s", phoneNumber, eMail);
+        System.out.println(printMessage);
+    }
+
+    @Override
+    public String toString() {
+
+        return String.format("ID: %d, VenueName: %s, EventCode: %d",
+                this.getID(), this.getVenueName(), this.getEventCode());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Ticket ticket = (Ticket) o;
+        return ticketID == ticket.ticketID && getEventCode() == ticket.getEventCode() && Objects.equals(getTicketCreationTime(), ticket.getTicketCreationTime());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ticketID, getEventCode(), getTicketCreationTime());
+    }
+
+    public enum SeatSector {
         A('A'),
         B('B'),
         C('C');
 
         private char title;
 
-        StadiumSector(char title) {
+        SeatSector(char title) {
             this.title = title;
         }
 
