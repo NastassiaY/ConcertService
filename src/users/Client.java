@@ -1,6 +1,6 @@
-package Users;
+package users;
 
-import Ticket.Ticket;
+import model.Ticket;
 
 import java.util.ArrayList;
 

@@ -1,11 +1,11 @@
-package Users;
+package users;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
-public class User implements Service.IDManager, Service.PrintClassInfo {
+public class User implements service.IDManager, service.PrintClassInfo {
     static int userCount = 1;
     int userID = 0;
     final String userName;

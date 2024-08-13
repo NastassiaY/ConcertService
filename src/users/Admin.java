@@ -1,6 +1,6 @@
-package Users;
+package users;
 
-import Ticket.Ticket;
+import model.Ticket;
 
 public class Admin extends User {
 

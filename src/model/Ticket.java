@@ -1,10 +1,10 @@
-package Ticket;
+package model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Ticket implements Service.IDManager, Service.PrintClassInfo {
+public class Ticket implements service.IDManager, service.PrintClassInfo {
     private static int ticketCount = 1;
     private int ticketID;
     private String venueName;

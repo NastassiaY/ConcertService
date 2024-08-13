@@ -1,11 +1,7 @@
-package Ticket;
+import model.Ticket;
+import users.User;
 
-import Users.User;
-
-import java.time.LocalDateTime;
-import java.time.Month;
-
-public class TicketService implements Service.PrintClassInfo {
+public class TicketService implements service.PrintClassInfo {
     public static void main(String[] args) {
         User user1 = new User("Soliderus", User.UserRole.ADMIN);
         User user2 = new User("Nastenish", User.UserRole.CLIENT);

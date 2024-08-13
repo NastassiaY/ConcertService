@@ -1,4 +1,4 @@
-package Service;
+package service;
 
 public interface PrintClassInfo {
      public default void printClassInfo() {
