@@ -1,7 +1,12 @@
+package main;
+
 import model.Ticket;
-import model.TicketDAO;
+import service.appDAO.TicketDAO;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import service.Config;
 import users.User;
-import users.UserDAO;
+import service.appDAO.UserDAO;
 
 import java.util.List;
 
@@ -17,8 +22,9 @@ public class TicketService {
         Ticket ticket3 = new Ticket(Ticket.TicketType.MONTH, user1);
         Ticket ticket4 = new Ticket(Ticket.TicketType.YEAR, user3);
 
-
-        UserDAO userDAO = new UserDAO();
+        ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+        UserDAO userDAO = context.getBean(UserDAO.class);
+        TicketDAO ticketDAO = context.getBean(TicketDAO.class);
 
         userDAO.save(user1);
         userDAO.save(user2);
@@ -26,8 +32,6 @@ public class TicketService {
 
         User user5 = userDAO.getByID(user1.getID());
         userDAO.delete(user3);
-
-        TicketDAO ticketDAO = new TicketDAO();
 
         ticketDAO.save(ticket1);
         ticketDAO.save(ticket2);
