@@ -1,30 +1,61 @@
 package model;
 
+import users.User;
+
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Ticket implements service.IDManager, service.PrintClassInfo {
-    private static int ticketCount = 1;
-    private int ticketID;
+
+public class Ticket implements service.PrintClassInfo {
+    static int userCount = 1;
+
+    private Integer id = 0;
     private String venueName;
     private int eventCode;
     private LocalDateTime time;
     private boolean isPromo;
     private SeatSector seatSector;
     private float backpackWeightMAX;
-    private final LocalDateTime ticketCreationTime;
+    private LocalDate ticketCreationDate;
+    private TicketType ticketType;
+    private User user;
+
     public static ArrayList<Ticket> tickets = new ArrayList<Ticket>();
 
+    public void setID() {
+        if(this.id == 0) {
+            this.id = userCount++;
+        } else {
+            System.out.println("User ID is already set");
+            return;
+        }
+    }
+    public void setID(int id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
     public Ticket() {
-        this.setID();
-        ticketCreationTime = LocalDateTime.now();
         tickets.add(this);
     }
 
-    public Ticket(String venueName, int eventCode, LocalDateTime time) {
+    public Ticket(TicketType tt, User user) {
+        tickets.add(this);
+        ticketCreationDate = LocalDate.now();
         this.setID();
-        ticketCreationTime = LocalDateTime.now();
+        this.ticketType = tt;
+        this.user = user;
+    }
+
+    public Ticket(String venueName, int eventCode, LocalDateTime time) {
+        ticketCreationDate = LocalDate.now();
+        this.setID();
 
         if (venueName.length() > 10) {
             throw new IllegalArgumentException("ConcertHallName shouldn't be longer than 10 chars");
@@ -46,7 +77,6 @@ public class Ticket implements service.IDManager, service.PrintClassInfo {
         this(venueName, eventCode, time);
 
         this.isPromo = isPromo;
-        this.seatSector = seatSector;
 
         if (backpackWeightMAX <= 0) {
             throw new IllegalArgumentException("BagWeightMAX should be above 0");
@@ -55,19 +85,9 @@ public class Ticket implements service.IDManager, service.PrintClassInfo {
 
     }
 
-    @Override
-    public void setID() {
-        if(this.ticketID == 0) {
-            this.ticketID = ticketCount++;
-        } else {
-            System.out.println("Ticket ID is already set");
-            return;
-        }
-    }
 
-    @Override
     public int getID() {
-        return this.ticketID;
+        return this.id;
     }
 
     public String getVenueName() {return this.venueName;}
@@ -90,7 +110,27 @@ public class Ticket implements service.IDManager, service.PrintClassInfo {
 
     public float getBackpackWeightMAX() {return this.backpackWeightMAX;}
 
-    public LocalDateTime getTicketCreationTime() {return ticketCreationTime;}
+    public void setTicketCreationDate(LocalDate date) {
+        this.ticketCreationDate = date;
+    }
+
+    public LocalDate getTicketCreationDate() {return ticketCreationDate;}
+
+    public void setTicketType(TicketType tt) {
+        this.ticketType = tt;
+    }
+
+    public TicketType getTicketType() {
+        return this.ticketType;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
 
     public void shareTicket(long phoneNumber) {
         String ticketDetail = this.toString();
@@ -111,19 +151,6 @@ public class Ticket implements service.IDManager, service.PrintClassInfo {
                 this.getID(), this.getVenueName(), this.getEventCode());
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Ticket ticket = (Ticket) o;
-        return ticketID == ticket.ticketID && getEventCode() == ticket.getEventCode() && Objects.equals(getTicketCreationTime(), ticket.getTicketCreationTime());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(ticketID, getEventCode(), getTicketCreationTime());
-    }
-
     public enum SeatSector {
         A('A'),
         B('B'),
@@ -138,6 +165,13 @@ public class Ticket implements service.IDManager, service.PrintClassInfo {
         public char getTitle() {
             return title;
         }
+    }
+
+    public enum TicketType {
+        DAY,
+        WEEK,
+        MONTH,
+        YEAR
     }
 
 }
