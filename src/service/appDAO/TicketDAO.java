@@ -1,19 +1,27 @@
-package model;
+package service.appDAO;
 
 
-import service.DBConnection;
+import model.Ticket;
+import org.postgresql.ds.PGSimpleDataSource;
+import org.springframework.stereotype.Component;
 import users.User;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TicketDAO extends DBConnection {
+@Component
+public class TicketDAO {
 
+    public PGSimpleDataSource dataSource;
+
+    public TicketDAO(PGSimpleDataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     public void save(Ticket ticket) {
         String sql = "INSERT INTO Ticket(id, creation_date, ticket_type, user_id) VALUES (?, ?, ?::ticket_type, ?)";
-        try (Connection connection = connect();
+        try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);) {
 
             statement.setInt(1, ticket.getID());
@@ -35,7 +43,7 @@ public class TicketDAO extends DBConnection {
 
     public Ticket getByID(int id) {
         String sql = "SELECT * FROM Ticket WHERE id = ?";
-        try (Connection connection = connect();
+        try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);) {
 
             statement.setInt(1, id);
@@ -60,7 +68,7 @@ public class TicketDAO extends DBConnection {
 
         List<Ticket> ticketList = new ArrayList<>();
         String sql = "SELECT ticket_id FROM(Ticket JOIN User ON Ticket.user_id = User.id) WHERE User.id = ?";
-        try (Connection connection = connect();
+        try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);) {
 
             statement.setInt(4, id);
@@ -82,7 +90,7 @@ public class TicketDAO extends DBConnection {
 
     public void update(int id, Ticket.TicketType ticketType) {
         String sql = "Update Ticket set ticket_type=?::ticket_type WHERE id = ?";
-        try (Connection connection = connect();
+        try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);) {
 
             statement.setString(3, ticketType.toString());

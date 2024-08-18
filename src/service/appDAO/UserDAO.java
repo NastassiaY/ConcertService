@@ -1,15 +1,23 @@
-package users;
+package service.appDAO;
 
 import org.postgresql.ds.PGSimpleDataSource;
-import service.DBConnection;
+import org.springframework.stereotype.Component;
+import users.User;
 
 import java.sql.*;
 
-public class UserDAO extends DBConnection {
+@Component
+public class UserDAO {
+
+    public PGSimpleDataSource dataSource;
+
+    public UserDAO(PGSimpleDataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     public void save(User user) throws RuntimeException {
         String sql = "INSERT INTO User (id, name, creation_date) VALUES (?, ?, ?)";
-        try (Connection connection = connect();
+        try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);) {
 
             statement.setInt(1, user.getID());
@@ -32,7 +40,7 @@ public class UserDAO extends DBConnection {
 
     public User getByID(int id) {
         String sql = "SELECT * FROM User WHERE id = ?";
-        try (Connection connection = connect();
+        try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);) {
 
             statement.setInt(1, id);
@@ -55,7 +63,7 @@ public class UserDAO extends DBConnection {
 
     public void delete(User user) {
         String sql = "DELETE User WHERE id=?";
-        try (Connection connection = connect();
+        try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);) {
 
             statement.setInt(1, user.getID());
