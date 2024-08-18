@@ -1,27 +1,36 @@
 package users;
 
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
-public class User implements service.IDManager, service.PrintClassInfo {
+
+public class User implements service.PrintClassInfo {
     static int userCount = 1;
-    int userID = 0;
-    final String userName;
+    private Integer id = 0;
+    String userName;
     UserRole userRole;
+    LocalDate creationDate;
     public static ArrayList<User> userList = new ArrayList<User>();
 
-    public User(String userName) {
-        this.userName = userName;
-        this.setID();
+    public User() {
         userList.add(this);
     }
-
+    public User(String userName) {
+        this.setID();
+        this.userName = userName;
+        this.creationDate = LocalDate.now();
+        userList.add(this);
+    }
     public User(String userName, UserRole userRole) {
+        this.setID();
         this.userName = userName;
         this.userRole = userRole;
-        this.setID();
+        this.creationDate = LocalDate.now();
         userList.add(this);
     }
 
@@ -29,23 +38,45 @@ public class User implements service.IDManager, service.PrintClassInfo {
         System.out.printf("User %s with ID %d is %s%n", this.getUserName(), this.getID(), this.userRole.getTitle());
     }
 
+    public void setUserName(String name) {
+        this.userName = name;
+    }
     public String getUserName() {
         return userName;
     }
 
-    @Override
+    public void setCreationDate(LocalDate date) {
+        this.creationDate = date;
+    }
+    public LocalDate getCreationDate() {
+        return this.creationDate;
+    }
+
     public void setID() {
-        if(this.userID == 0) {
-            this.userID = userCount++;
+        if (this.id == 0) {
+            this.id = userCount++;
         } else {
             System.out.println("User ID is already set");
             return;
         }
     }
+    public void setID(int id) {
+        this.id = id;
+    }
 
-    @Override
-    public int getID() {
-        return userID;
+    public Integer getID() {
+        return id;
+    }
+
+    public static User getByID(int id) {
+        for(User user : userList) {
+            if(user.getID() == id) {
+                return user;
+            } else {
+                System.out.println("No matches found");
+            }
+        }
+        return null;
     }
 
     public String getClassInfo() {
